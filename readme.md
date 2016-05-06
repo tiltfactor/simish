@@ -15,13 +15,13 @@ simish
 http://localhost:8000/api/v1/response?input=Hello&room=ExampleRoom
 ```
 
-## WIP - Not currently working
-# Upvoting a match
+# WIP - Not currently working
+## Upvoting a match
 ```bash
 http://localhost:8000/api/v1/upvote?input=Hello&match=Hey&room=ExampleRoom
 ```
 
-# Downvoting a match
+## Downvoting a match
 ```bash
 http://localhost:8000/api/v1/downvote?input=Hello&match=Hey&room=ExampleRoom
 ```
