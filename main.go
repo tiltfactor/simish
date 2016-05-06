@@ -103,5 +103,5 @@ func main() {
 	r.HandleFunc("/api/v1/downvote", app.DownvoteHandler)
 
 	// Bind to a port and pass our router in
-	http.ListenAndServe(":8000", r)
+	http.ListenAndServe(":8765", r)
 }
