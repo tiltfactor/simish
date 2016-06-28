@@ -8,8 +8,8 @@ import (
 	"regexp"
 
 	"github.com/gorilla/mux"
-	"github.com/jesusrmoreno/sim/domain"
-	"github.com/jesusrmoreno/sim/impl"
+	"github.com/tiltfactor/simish/domain"
+	"github.com/tiltfactor/simish/impl"
 )
 
 type inputData map[string]string
