@@ -3,7 +3,7 @@ package impl
 import (
 	"fmt"
 
-	"github.com/jesusrmoreno/sim/domain"
+	"github.com/tiltfactor/simish/domain"
 	"github.com/jinzhu/gorm"
 	"github.com/masatana/go-textdistance"
 	// Only need SQL
