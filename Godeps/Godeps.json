@@ -1,0 +1,41 @@
+{
+	"ImportPath": "github.com/tiltfactor/simish",
+	"GoVersion": "go1.6",
+	"GodepVersion": "v60",
+	"Deps": [
+		{
+			"ImportPath": "github.com/deckarep/golang-set",
+			"Comment": "v1.5-4-g1f0f4ff",
+			"Rev": "1f0f4ff8d3fbef9328522993ce71c35890f67554"
+		},
+		{
+			"ImportPath": "github.com/gorilla/context",
+			"Rev": "1c83b3eabd45b6d76072b66b746c20815fb2872d"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Rev": "49c024275504f0341e5a9971eb7ba7fa3dc7af40"
+		},
+		{
+			"ImportPath": "github.com/jinzhu/gorm",
+			"Rev": "021d7b33143de37b743d1cf660974e9c8d3f80ea"
+		},
+		{
+			"ImportPath": "github.com/jinzhu/gorm/dialects/sqlite",
+			"Rev": "021d7b33143de37b743d1cf660974e9c8d3f80ea"
+		},
+		{
+			"ImportPath": "github.com/jinzhu/inflection",
+			"Rev": "3272df6c21d04180007eb3349844c89a3856bc25"
+		},
+		{
+			"ImportPath": "github.com/masatana/go-textdistance",
+			"Rev": "15c30c968fddf3e2c5c4175fbdb4f9eebbbb8802"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-sqlite3",
+			"Comment": "v1.1.0-27-g5651a9d",
+			"Rev": "5651a9d9d49ec25811d08220ee972080378d52ea"
+		}
+	]
+}
