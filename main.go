@@ -99,10 +99,13 @@ type DBConfig struct {
 	Pass string `json:"password"`
 	IP   string `json:"ip_addr"`
 	Port string `json:"port"`
+	DB   string `json:"database"`
 }
 
 func (cfg *DBConfig) connectionString() string {
-	return fmt.Sprintf("%s:%s@%s", cfg.User, cfg.Pass, cfg.IP)
+	connStr := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", cfg.User, cfg.Pass, cfg.IP, cfg.DB)
+	log.Println(connStr)
+	return connStr
 }
 
 func main() {
