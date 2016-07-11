@@ -2,6 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -90,8 +93,30 @@ func checkExt(ext string) []string {
 	return files
 }
 
+// DBConfig ...
+type DBConfig struct {
+	User string `json:"username"`
+	Pass string `json:"password"`
+	IP   string `json:"ip_addr"`
+	Port string `json:"port"`
+}
+
+func (cfg *DBConfig) connectionString() string {
+	return fmt.Sprintf("%s:%s@/%s", cfg.User, cfg.Pass, cfg.IP)
+}
+
 func main() {
-	store, _ := impl.NewSQLStore("test_sql.db")
+	cfgFile, err := ioutil.ReadFile("./db_cfg.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cfg := &DBConfig{}
+	if err := json.Unmarshal(cfgFile, cfg); err != nil {
+		log.Fatal()
+	}
+
+	store, _ := impl.NewSQLStore(cfg.connectionString())
 	app := App{
 		db: store,
 	}

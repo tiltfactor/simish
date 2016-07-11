@@ -2,12 +2,13 @@ package impl
 
 import (
 	"fmt"
+	"log"
 
-	"github.com/tiltfactor/simish/domain"
 	"github.com/jinzhu/gorm"
 	"github.com/masatana/go-textdistance"
+	"github.com/tiltfactor/simish/domain"
 	// Only need SQL
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 // SQLStore ..
@@ -17,11 +18,16 @@ type SQLStore struct {
 
 // NewSQLStore ...
 func NewSQLStore(path string) (*SQLStore, error) {
-	db, err := gorm.Open("sqlite3", path)
+	db, err := gorm.Open("mysql", path)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
+	if err := db.DB().Ping(); err != nil {
+		log.Println(err)
+		return nil, err
+	}
 	// db.DropTable(new(domain.Match))
 	// db.DropTable(new(domain.InputOutput))
 	if !db.HasTable(new(domain.InputOutput)) {
