@@ -132,5 +132,8 @@ func main() {
 
 	// Bind to a port and pass our router in
 	log.Println("Running on port:", cfg.ServerPort)
-	http.ListenAndServe(":"+cfg.ServerPort, r)
+	if err := http.ListenAndServe(":"+cfg.ServerPort, r); err != nil {
+		log.Fatal(err)
+	}
+
 }
