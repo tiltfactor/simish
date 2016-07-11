@@ -94,11 +94,12 @@ func checkExt(ext string) []string {
 
 // DBConfig ...
 type DBConfig struct {
-	User string `json:"username"`
-	Pass string `json:"password"`
-	IP   string `json:"ip_addr"`
-	Port string `json:"port"`
-	DB   string `json:"database"`
+	User       string `json:"username"`
+	Pass       string `json:"password"`
+	IP         string `json:"ip_addr"`
+	Port       string `json:"db_port"`
+	DB         string `json:"database"`
+	ServerPort string `json:"server_port"`
 }
 
 func (cfg *DBConfig) connectionString() string {
@@ -130,5 +131,6 @@ func main() {
 	r.HandleFunc("/api/v1/downvote", app.DownvoteHandler)
 
 	// Bind to a port and pass our router in
-	http.ListenAndServe(":8765", r)
+	log.Println("Running on port:", cfg.ServerPort)
+	http.ListenAndServe(":"+cfg.ServerPort, r)
 }
