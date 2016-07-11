@@ -102,7 +102,7 @@ type DBConfig struct {
 }
 
 func (cfg *DBConfig) connectionString() string {
-	return fmt.Sprintf("%s:%s@/%s", cfg.User, cfg.Pass, cfg.IP)
+	return fmt.Sprintf("%s:%s@%s", cfg.User, cfg.Pass, cfg.IP)
 }
 
 func main() {
