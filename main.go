@@ -102,7 +102,9 @@ type DBConfig struct {
 }
 
 func (cfg *DBConfig) connectionString() string {
-	return fmt.Sprintf("%s:%s@/%s", cfg.User, cfg.Pass, cfg.IP)
+	connStr := fmt.Sprintf("%s:%s@tcp(%s:3306)/", cfg.User, cfg.Pass, cfg.IP)
+	log.Println(connStr)
+	return connStr
 }
 
 func main() {
