@@ -17,10 +17,15 @@ type InputOutputStore interface {
 // InputOutput ...
 type InputOutput struct {
 	int    `sql:"AUTO_INCREMENT" gorm:"primary_key"`
-	Input  string `json:"input"`
-	Output string `json:"output"`
-	Room   string `json:"room"`
-	UID    string `sql:"unique" json:"uid"`
+	Input  string `json:"pc_input"`
+	Output string `json:"gm_response"`
+	RoomID int64  `json:"room_id"`
+}
+
+// TableName setting this function satisfies the gorm interface and changes the table
+// name.
+func (i InputOutput) TableName() string {
+	return "input_response_pairs"
 }
 
 // Match ...
@@ -45,12 +50,11 @@ func NewMatch(input, match, room string) Match {
 }
 
 // NewInputOutput ...
-func NewInputOutput(input, output, room string) InputOutput {
+func NewInputOutput(input, output string, room int64) InputOutput {
 	return InputOutput{
 		Input:  input,
 		Output: output,
-		Room:   room,
-		UID:    Hash(input, output),
+		RoomID: room,
 	}
 }
 

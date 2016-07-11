@@ -28,8 +28,6 @@ func NewSQLStore(path string) (*SQLStore, error) {
 		log.Println(err)
 		return nil, err
 	}
-	// db.DropTable(new(domain.Match))
-	// db.DropTable(new(domain.InputOutput))
 	if !db.HasTable(new(domain.InputOutput)) {
 		db.CreateTable(new(domain.Match))
 		db.CreateTable(new(domain.InputOutput))
@@ -49,9 +47,11 @@ func (s SQLStore) SaveMatch(match domain.Match) {
 func (s SQLStore) SaveInputOutput(io domain.InputOutput) {
 	indb := domain.InputOutput{}
 	s.db.Model(new(domain.InputOutput)).
-		Where("uid = ?", domain.Hash(io.Input, io.Output)).
+		Where("pc_input = ? AND gm_input = ?", io.Input, io.Output).
 		First(&indb)
-	if indb.UID == "" {
+
+	// If the input pair has not been saved.
+	if indb.Input == "" {
 		s.db.Save(&io)
 	}
 }
@@ -65,7 +65,7 @@ func (s SQLStore) Store(io domain.InputOutput) error {
 // Response ..
 func (s SQLStore) Response(in, room string) (domain.InputOutput, domain.Match, float64, error) {
 	pairs := []domain.InputOutput{}
-	s.db.Model(new(domain.InputOutput)).Where("room = ?", room).Find(&pairs)
+	s.db.Model(new(domain.InputOutput)).Where("room_id = ?", room).Find(&pairs)
 	response := domain.InputOutput{}
 	var maxScore float64
 	match := domain.Match{}
@@ -73,21 +73,21 @@ func (s SQLStore) Response(in, room string) (domain.InputOutput, domain.Match, f
 		indb := pair.Input
 		score := textdistance.JaroWinklerDistance(in, indb)
 
-		dm := domain.Match{}
-		s.db.Model(new(domain.Match)).
-			Where("uid = ?", domain.Hash(in, indb)).
-			First(&dm)
-
-		// We need to convert them to floats so they don't get truncated
-		votes := float64(dm.UpVotes) / float64((dm.UpVotes + dm.DownVotes))
-
-		if (dm.UpVotes + dm.DownVotes) > 0 {
-			score *= votes
-		}
+		// dm := domain.Match{}
+		// s.db.Model(new(domain.Match)).
+		// 	Where("uid = ?", domain.Hash(in, indb)).
+		// 	First(&dm)
+		//
+		// // We need to convert them to floats so they don't get truncated
+		// votes := float64(dm.UpVotes) / float64((dm.UpVotes + dm.DownVotes))
+		//
+		// if (dm.UpVotes + dm.DownVotes) > 0 {
+		// 	score *= votes
+		// }
 		if score > maxScore {
 			maxScore = score
 			response = pair
-			match = dm
+			// match = dm
 		}
 	}
 	return response, match, maxScore, nil

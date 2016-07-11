@@ -11,7 +11,6 @@ import (
 	"regexp"
 
 	"github.com/gorilla/mux"
-	"github.com/tiltfactor/simish/domain"
 	"github.com/tiltfactor/simish/impl"
 )
 
@@ -50,8 +49,8 @@ func (a App) ResponseHandler(w http.ResponseWriter, r *http.Request) {
 		Score:    score,
 	}
 
-	match := domain.NewMatch(input[0], io.Input, room[0])
-	a.db.SaveMatch(match)
+	// match := domain.NewMatch(input[0], io.Input, room[0])
+	// a.db.SaveMatch(match)
 
 	data, _ := json.Marshal(resp)
 	w.Write(data)
@@ -116,7 +115,7 @@ func main() {
 
 	cfg := &DBConfig{}
 	if err := json.Unmarshal(cfgFile, cfg); err != nil {
-		log.Fatal()
+		log.Fatal(err)
 	}
 
 	store, _ := impl.NewSQLStore(cfg.connectionString())
