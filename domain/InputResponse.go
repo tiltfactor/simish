@@ -17,8 +17,8 @@ type InputOutputStore interface {
 // InputOutput ...
 type InputOutput struct {
 	int    `sql:"AUTO_INCREMENT" gorm:"primary_key"`
-	Input  string `json:"pc_input"`
-	Output string `json:"gm_response"`
+	Input  string `json:"pc_input" gorm:"column:pc_input"`
+	Output string `json:"gm_response" gorm:"column:gm_response"`
 	RoomID int64  `json:"room_id"`
 }
 

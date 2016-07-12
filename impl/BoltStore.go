@@ -63,16 +63,20 @@ func (s SQLStore) Store(io domain.InputOutput) error {
 }
 
 // Response ..
-func (s SQLStore) Response(in, room string) (domain.InputOutput, domain.Match, float64, error) {
+func (s SQLStore) Response(in string, room int64) (domain.InputOutput, domain.Match, float64, error) {
+	log.Println(room)
 	pairs := []domain.InputOutput{}
-	s.db.Model(new(domain.InputOutput)).Where("room_id = ?", room).Find(&pairs)
+	// pairs := []map[string]interface{}{}
+
+	s.db.Model(&domain.InputOutput{}).Where("room_id = ?", room).Find(&pairs)
+	log.Println(pairs)
 	response := domain.InputOutput{}
+
 	var maxScore float64
 	match := domain.Match{}
 	for _, pair := range pairs {
 		indb := pair.Input
 		score := textdistance.JaroWinklerDistance(in, indb)
-
 		// dm := domain.Match{}
 		// s.db.Model(new(domain.Match)).
 		// 	Where("uid = ?", domain.Hash(in, indb)).

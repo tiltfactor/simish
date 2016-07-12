@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/tiltfactor/simish/impl"
@@ -39,7 +40,13 @@ func (a App) ResponseHandler(w http.ResponseWriter, r *http.Request) {
 	vars := r.URL.Query()
 	input := vars["input"]
 	room := vars["room"]
-	io, _, score, _ := a.db.Response(input[0], room[0])
+	i, err := strconv.ParseInt(room[0], 10, 64)
+
+	if err != nil {
+		panic(err)
+	}
+
+	io, _, score, _ := a.db.Response(input[0], i)
 
 	resp := response{
 		Input:    input[0],
