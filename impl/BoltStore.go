@@ -2,7 +2,6 @@ package impl
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/jinzhu/gorm"
 	"github.com/masatana/go-textdistance"
@@ -19,15 +18,15 @@ type SQLStore struct {
 // NewSQLStore ...
 func NewSQLStore(path string) (*SQLStore, error) {
 	db, err := gorm.Open("mysql", path)
+
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 
 	if err := db.DB().Ping(); err != nil {
-		log.Println(err)
 		return nil, err
 	}
+
 	if !db.HasTable(new(domain.InputOutput)) {
 		db.CreateTable(new(domain.Match))
 		db.CreateTable(new(domain.InputOutput))
@@ -62,21 +61,15 @@ func (s SQLStore) Store(io domain.InputOutput) error {
 	return nil
 }
 
-// Response ..
-func (s SQLStore) Response(in string, room int64) (domain.InputOutput, domain.Match, float64, error) {
-	log.Println(room)
-	pairs := []domain.InputOutput{}
-	// pairs := []map[string]interface{}{}
-
-	s.db.Model(&domain.InputOutput{}).Where("room_id = ?", room).Find(&pairs)
-	log.Println(pairs)
+// SoftMatch is the actual algorithm that is used to match two inputs.
+func SoftMatch(input string, pairs []domain.InputOutput) (domain.InputOutput, float64) {
 	response := domain.InputOutput{}
 
 	var maxScore float64
-	match := domain.Match{}
 	for _, pair := range pairs {
 		indb := pair.Input
-		score := textdistance.JaroWinklerDistance(in, indb)
+		score := textdistance.JaroWinklerDistance(input, indb)
+		// This is the upvote code not implemented yet
 		// dm := domain.Match{}
 		// s.db.Model(new(domain.Match)).
 		// 	Where("uid = ?", domain.Hash(in, indb)).
@@ -91,10 +84,16 @@ func (s SQLStore) Response(in string, room int64) (domain.InputOutput, domain.Ma
 		if score > maxScore {
 			maxScore = score
 			response = pair
-			// match = dm
 		}
 	}
-	return response, match, maxScore, nil
+	return response, maxScore
+}
+
+// Response ..
+func (s SQLStore) Response(in string, room int64) (domain.InputOutput, float64) {
+	pairs := []domain.InputOutput{}
+	s.db.Model(&domain.InputOutput{}).Where("room_id = ?", room).Find(&pairs)
+	return SoftMatch(in, pairs)
 }
 
 func (s SQLStore) containsMatch(pair *domain.Match) bool {

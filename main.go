@@ -7,8 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
-	"regexp"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -30,6 +28,11 @@ type response struct {
 	Score    float64 `json:"score"`
 }
 
+func (r response) String() string {
+	return fmt.Sprintf("Input: %s, Matched: %s, Score: %f, Response: %s, Room: %s",
+		r.Input, r.Match, r.Score, r.Response, r.Room)
+}
+
 type rawData struct {
 	Text  string `json:"text"`
 	Reply string `json:"reply"`
@@ -40,13 +43,19 @@ func (a App) ResponseHandler(w http.ResponseWriter, r *http.Request) {
 	vars := r.URL.Query()
 	input := vars["input"]
 	room := vars["room"]
-	i, err := strconv.ParseInt(room[0], 10, 64)
 
-	if err != nil {
-		panic(err)
+	if len(room) < 1 {
+		http.Error(w, "Must provide room number", 400)
+		return
 	}
 
-	io, _, score, _ := a.db.Response(input[0], i)
+	roomNumber, err := strconv.ParseInt(room[0], 10, 64)
+	if err != nil {
+		http.Error(w, "Room number must be an int", 400)
+		return
+	}
+
+	io, score := a.db.Response(input[0], roomNumber)
 
 	resp := response{
 		Input:    input[0],
@@ -56,47 +65,16 @@ func (a App) ResponseHandler(w http.ResponseWriter, r *http.Request) {
 		Score:    score,
 	}
 
-	// match := domain.NewMatch(input[0], io.Input, room[0])
-	// a.db.SaveMatch(match)
+	log.Println(resp)
 
-	data, _ := json.Marshal(resp)
-	w.Write(data)
-}
-
-// UpvoteHandler ...
-func (a App) UpvoteHandler(w http.ResponseWriter, r *http.Request) {
-	vars := r.URL.Query()
-	input := vars["input"][0]
-	match := vars["match"][0]
-	room := vars["room"][0]
-	a.db.Upvote(input, match, room)
-}
-
-// DownvoteHandler ...
-func (a App) DownvoteHandler(w http.ResponseWriter, r *http.Request) {
-	vars := r.URL.Query()
-	input := vars["input"][0]
-	match := vars["match"][0]
-	room := vars["room"][0]
-	a.db.Downvote(input, match, room)
-}
-
-func checkExt(ext string) []string {
-	pathS, err := os.Getwd()
+	data, err := json.Marshal(resp)
 	if err != nil {
-		panic(err)
+		http.Error(w, err.Error(), 500)
+		return
 	}
-	var files []string
-	filepath.Walk(pathS, func(path string, f os.FileInfo, _ error) error {
-		if !f.IsDir() {
-			r, err := regexp.MatchString(ext, f.Name())
-			if err == nil && r {
-				files = append(files, path)
-			}
-		}
-		return nil
-	})
-	return files
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(data)
 }
 
 // DBConfig ...
@@ -126,21 +104,28 @@ func main() {
 		log.Fatal(err)
 	}
 
-	store, _ := impl.NewSQLStore(cfg.connectionString())
-	app := App{
-		db: store,
-	}
-
-	r := mux.NewRouter()
-	// Routes consist of a path and a handler function.
-	r.HandleFunc("/api/v1/response", app.ResponseHandler)
-	r.HandleFunc("/api/v1/upvote", app.UpvoteHandler)
-	r.HandleFunc("/api/v1/downvote", app.DownvoteHandler)
-
-	// Bind to a port and pass our router in
-	log.Println("Running on port:", cfg.ServerPort)
-	if err := http.ListenAndServe(":"+cfg.ServerPort, r); err != nil {
+	store, err := impl.NewSQLStore(cfg.connectionString())
+	if err != nil {
 		log.Fatal(err)
 	}
 
+	app := App{db: store}
+
+	r := mux.NewRouter()
+
+	// Routes consist of a path and a handler function.
+	r.HandleFunc("/api/v1/response", app.ResponseHandler)
+
+	// Bind to a port and pass our router in
+	log.Println("Running on port:", cfg.ServerPort)
+
+	logFile, err := os.OpenFile("logs", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatal("Could not open log file")
+	}
+	defer logFile.Close()
+	log.SetOutput(logFile)
+	if err := http.ListenAndServe(":"+cfg.ServerPort, r); err != nil {
+		log.Fatal(err)
+	}
 }
