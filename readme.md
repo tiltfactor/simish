@@ -7,6 +7,11 @@ To install Simish just run.
 go get github.com/tiltfactor/simish
 ```
 
+To update to new version add the -u flag
+```bash
+go get -u github.com/tiltfactor/simish
+```
+
 To run the program make sure you have a db_cfg.json file in the directory where you're running
 Simish.
 
