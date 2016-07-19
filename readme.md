@@ -1,6 +1,9 @@
 # Simish
 
+
 Simish is a sentence matching microservice built for the crowded-dungeon game.
+
+godocs https://godoc.org/github.com/tiltfactor/simish
 
 To install Simish just run.
 ```bash
