@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"fmt"
+
+	textdistance "github.com/masatana/go-textdistance"
 )
 
 // InputOutputStore ...
@@ -56,6 +58,24 @@ func NewInputOutput(input, output string, room int64) InputOutput {
 		Output: output,
 		RoomID: room,
 	}
+}
+
+// SoftMatch is the actual algorithm that is used to match two inputs.
+// it takes the user's input string and a slice of the InputOutput pairs
+// it should match against.
+func SoftMatch(input string, pairs []InputOutput) (InputOutput, float64) {
+	response := InputOutput{}
+
+	var maxScore float64
+	for _, pair := range pairs {
+		indb := pair.Input
+		score := textdistance.JaroWinklerDistance(input, indb)
+		if score > maxScore {
+			maxScore = score
+			response = pair
+		}
+	}
+	return response, maxScore
 }
 
 // Hash ...

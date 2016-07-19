@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/jinzhu/gorm"
-	"github.com/masatana/go-textdistance"
 	"github.com/tiltfactor/simish/domain"
 	// Only need SQL
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -61,39 +60,11 @@ func (s SQLStore) Store(io domain.InputOutput) error {
 	return nil
 }
 
-// SoftMatch is the actual algorithm that is used to match two inputs.
-func SoftMatch(input string, pairs []domain.InputOutput) (domain.InputOutput, float64) {
-	response := domain.InputOutput{}
-
-	var maxScore float64
-	for _, pair := range pairs {
-		indb := pair.Input
-		score := textdistance.JaroWinklerDistance(input, indb)
-		// This is the upvote code not implemented yet
-		// dm := domain.Match{}
-		// s.db.Model(new(domain.Match)).
-		// 	Where("uid = ?", domain.Hash(in, indb)).
-		// 	First(&dm)
-		//
-		// // We need to convert them to floats so they don't get truncated
-		// votes := float64(dm.UpVotes) / float64((dm.UpVotes + dm.DownVotes))
-		//
-		// if (dm.UpVotes + dm.DownVotes) > 0 {
-		// 	score *= votes
-		// }
-		if score > maxScore {
-			maxScore = score
-			response = pair
-		}
-	}
-	return response, maxScore
-}
-
 // Response ..
 func (s SQLStore) Response(in string, room int64) (domain.InputOutput, float64) {
 	pairs := []domain.InputOutput{}
 	s.db.Model(&domain.InputOutput{}).Where("room_id = ?", room).Find(&pairs)
-	return SoftMatch(in, pairs)
+	return domain.SoftMatch(in, pairs)
 }
 
 func (s SQLStore) containsMatch(pair *domain.Match) bool {

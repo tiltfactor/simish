@@ -1,0 +1,293 @@
+use 'godoc cmd/github.com/tiltfactor/simish/domain' for documentation on the github.com/tiltfactor/simish/domain command 
+
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script type='text/javascript'>
+	document.ANALYSIS_DATA = ;
+	document.CALLGRAPH = ;
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "github.com/tiltfactor/simish/domain"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="#pkg-index" class="indexLink">Index</a></dd>
+			
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				
+			</div>
+		</div>
+		
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+			
+			
+				
+				<dd><a href="#Hash">func Hash(parts ...string) string</a></dd>
+			
+			
+				
+				<dd><a href="#InputOutput">type InputOutput</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NewInputOutput">func NewInputOutput(input, output string, room int64) InputOutput</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#SoftMatch">func SoftMatch(input string, pairs []InputOutput) (InputOutput, float64)</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#InputOutput.TableName">func (i InputOutput) TableName() string</a></dd>
+				
+			
+				
+				<dd><a href="#InputOutputStore">type InputOutputStore</a></dd>
+				
+				
+			
+				
+				<dd><a href="#Match">type Match</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NewMatch">func NewMatch(input, match, room string) Match</a></dd>
+				
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+
+		
+			<h4>Package files</h4>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="/src/github.com/tiltfactor/simish/domain/InputResponse.go">InputResponse.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		<div id="pkg-callgraph" class="toggle" style="display: none">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Internal Call Graph section">Internal call graph ▹</h2>
+		</div> <!-- .expanded -->
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Internal Call Graph section">Internal call graph ▾</h2>
+			<p>
+			  In the call graph viewer below, each node
+			  is a function belonging to this package
+			  and its children are the functions it
+			  calls&mdash;perhaps dynamically.
+			</p>
+			<p>
+			  The root nodes are the entry points of the
+			  package: functions that may be called from
+			  outside the package.
+			  There may be non-exported or anonymous
+			  functions among them if they are called
+			  dynamically from another package.
+			</p>
+			<p>
+			  Click a node to visit that function's source code.
+			  From there you can visit its callers by
+			  clicking its declaring <code>func</code>
+			  token.
+			</p>
+			<p>
+			  Functions may be omitted if they were
+			  determined to be unreachable in the
+			  particular programs or tests that were
+			  analyzed.
+			</p>
+			<!-- Zero means show all package entry points. -->
+			<ul style="margin-left: 0.5in" id="callgraph-0" class="treeview"></ul>
+		</div>
+		</div> <!-- #pkg-callgraph -->
+
+		
+		
+		
+			
+			
+			<h2 id="Hash">func <a href="/src/target/InputResponse.go?s=1878:1911#L72">Hash</a></h2>
+			<pre>func Hash(parts ...<a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#string">string</a></pre>
+			<p>
+Hash ...
+</p>
+
+			
+			
+
+		
+		
+			
+			
+			<h2 id="InputOutput">type <a href="/src/target/InputResponse.go?s=321:548#L10">InputOutput</a></h2>
+			<pre>type InputOutput struct {
+    Input  <a href="/pkg/builtin/#string">string</a> `json:&#34;pc_input&#34; gorm:&#34;column:pc_input&#34;`
+    Output <a href="/pkg/builtin/#string">string</a> `json:&#34;gm_response&#34; gorm:&#34;column:gm_response&#34;`
+    RoomID <a href="/pkg/builtin/#int64">int64</a>  `json:&#34;room_id&#34;`
+    <span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+			<p>
+InputOutput ...
+</p>
+
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewInputOutput">func <a href="/src/target/InputResponse.go?s=1215:1280#L45">NewInputOutput</a></h3>
+				<pre>func NewInputOutput(input, output <a href="/pkg/builtin/#string">string</a>, room <a href="/pkg/builtin/#int64">int64</a>) <a href="#InputOutput">InputOutput</a></pre>
+				<p>
+NewInputOutput ...
+</p>
+
+				
+				
+			
+				
+				<h3 id="SoftMatch">func <a href="/src/target/InputResponse.go?s=1533:1605#L56">SoftMatch</a></h3>
+				<pre>func SoftMatch(input <a href="/pkg/builtin/#string">string</a>, pairs []<a href="#InputOutput">InputOutput</a>) (<a href="#InputOutput">InputOutput</a>, <a href="/pkg/builtin/#float64">float64</a>)</pre>
+				<p>
+SoftMatch is the actual algorithm that is used to match two inputs.
+it takes the user&#39;s input string and a slice of the InputOutput pairs
+it should match against.
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="InputOutput.TableName">func (InputOutput) <a href="/src/target/InputResponse.go?s=645:684#L19">TableName</a></h3>
+				<pre>func (i <a href="#InputOutput">InputOutput</a>) TableName() <a href="/pkg/builtin/#string">string</a></pre>
+				<p>
+TableName setting this function satisfies the gorm interface and changes the table
+name.
+</p>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="InputOutputStore">type <a href="/src/target/InputResponse.go?s=136:300#L2">InputOutputStore</a></h2>
+			<pre>type InputOutputStore interface {
+    Store(<a href="#InputOutput">InputOutput</a>) <a href="/pkg/builtin/#error">error</a>
+    Response(<a href="/pkg/builtin/#string">string</a>, <a href="/pkg/builtin/#string">string</a>) (<a href="#InputOutput">InputOutput</a>, <a href="/pkg/builtin/#error">error</a>)
+    Upvote(<a href="#InputOutput">InputOutput</a>) <a href="/pkg/builtin/#error">error</a>
+    Downvote(<a href="#InputOutput">InputOutput</a>) <a href="/pkg/builtin/#error">error</a>
+}</pre>
+			<p>
+InputOutputStore ...
+</p>
+
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="Match">type <a href="/src/target/InputResponse.go?s=734:1029#L24">Match</a></h2>
+			<pre>type Match struct {
+    ID        <a href="/pkg/builtin/#int">int</a>    `sql:&#34;AUTO_INCREMENT&#34; gorm:&#34;primary_key&#34;`
+    UID       <a href="/pkg/builtin/#string">string</a> `json:&#34;uid&#34; sql:&#34;unique&#34;`
+    Input     <a href="/pkg/builtin/#string">string</a> `json:&#34;input&#34;`
+    Match     <a href="/pkg/builtin/#string">string</a> `json:&#34;match&#34;`
+    Room      <a href="/pkg/builtin/#string">string</a> `json:&#34;room&#34;`
+    UpVotes   <a href="/pkg/builtin/#int">int</a>    `json:&#34;upvotes&#34;`
+    DownVotes <a href="/pkg/builtin/#int">int</a>    `json:&#34;downvotes&#34;`
+}</pre>
+			<p>
+Match ...
+</p>
+
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewMatch">func <a href="/src/target/InputResponse.go?s=1047:1093#L35">NewMatch</a></h3>
+				<pre>func NewMatch(input, match, room <a href="/pkg/builtin/#string">string</a>) <a href="#Match">Match</a></pre>
+				<p>
+NewMatch ...
+</p>
+
+				
+				
+			
+
+			
+		
+	
+
+	
+
+
+
+
+
