@@ -1,8 +1,6 @@
 package impl
 
 import (
-	"fmt"
-
 	"github.com/jinzhu/gorm"
 	"github.com/tiltfactor/simish/domain"
 	// Only need SQL
@@ -14,10 +12,10 @@ type SQLStore struct {
 	db *gorm.DB
 }
 
-// NewSQLStore ...
+// NewSQLStore returns an initialized sql store. It takes the db path as its only arugment and
+// returns an error if it cannot connect to the database.
 func NewSQLStore(path string) (*SQLStore, error) {
 	db, err := gorm.Open("mysql", path)
-
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +25,6 @@ func NewSQLStore(path string) (*SQLStore, error) {
 	}
 
 	if !db.HasTable(new(domain.InputOutput)) {
-		db.CreateTable(new(domain.Match))
 		db.CreateTable(new(domain.InputOutput))
 	}
 
@@ -36,12 +33,7 @@ func NewSQLStore(path string) (*SQLStore, error) {
 	}, nil
 }
 
-// SaveMatch ...
-func (s SQLStore) SaveMatch(match domain.Match) {
-	s.db.Save(&match)
-}
-
-// SaveInputOutput ...
+// SaveInputOutput saves the provided input output pair
 func (s SQLStore) SaveInputOutput(io domain.InputOutput) {
 	indb := domain.InputOutput{}
 	s.db.Model(new(domain.InputOutput)).
@@ -54,69 +46,10 @@ func (s SQLStore) SaveInputOutput(io domain.InputOutput) {
 	}
 }
 
-// Store ..
-func (s SQLStore) Store(io domain.InputOutput) error {
-	s.db.Save(&io)
-	return nil
-}
-
-// Response ..
+// Response gets the available pairs from the database and runs the SoftMatch algorithm
+// returning the found pair and the score of the pair.
 func (s SQLStore) Response(in string, room int64) (domain.InputOutput, float64) {
 	pairs := []domain.InputOutput{}
 	s.db.Model(&domain.InputOutput{}).Where("room_id = ?", room).Find(&pairs)
 	return domain.SoftMatch(in, pairs)
-}
-
-func (s SQLStore) containsMatch(pair *domain.Match) bool {
-	indb := domain.Match{}
-	s.db.Model(new(domain.Match)).
-		Where("uid = ?", domain.Hash(pair.Input, pair.Match)).
-		First(&indb)
-	return indb.UID != ""
-}
-
-// Upvote ..
-func (s SQLStore) Upvote(in, match, room string) error {
-	pair := domain.Match{}
-
-	s.db.Model(new(domain.Match)).
-		Where("uid = ?", domain.Hash(in, match)).
-		Find(&pair)
-
-	fmt.Println(pair.UID)
-	if pair.UID != "" {
-		pair.UpVotes++
-		s.db.Save(&pair)
-	} else {
-		pair.Room = room
-		pair.Input = in
-		pair.Match = match
-		pair.UID = domain.Hash(in, match)
-		pair.UpVotes = 1
-		s.db.Save(&pair)
-	}
-	return nil
-}
-
-// Downvote ...
-func (s SQLStore) Downvote(in, match, room string) error {
-	pair := domain.Match{}
-
-	s.db.Model(new(domain.Match)).
-		Where("uid = ?", domain.Hash(in, match)).
-		Find(&pair)
-
-	fmt.Println(pair.UID)
-	if pair.UID != "" {
-		pair.DownVotes++
-		s.db.Save(&pair)
-	} else {
-		pair.Room = room
-		pair.Input = in
-		pair.Match = match
-		pair.UID = domain.Hash(in, match)
-		pair.DownVotes = 1
-		s.db.Save(&pair)
-	}
-	return nil
 }

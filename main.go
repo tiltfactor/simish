@@ -15,7 +15,7 @@ import (
 
 type inputData map[string]string
 
-// App ...
+// App holds the db structure. Used for dep injection.
 type App struct {
 	db *impl.SQLStore
 }
@@ -38,7 +38,7 @@ type rawData struct {
 	Reply string `json:"reply"`
 }
 
-// ResponseHandler ...
+// ResponseHandler handles the user request for a input output pair
 func (a App) ResponseHandler(w http.ResponseWriter, r *http.Request) {
 	vars := r.URL.Query()
 	input := vars["input"]
@@ -77,7 +77,7 @@ func (a App) ResponseHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-// DBConfig ...
+// DBConfig is used to import the db_cfg.json file
 type DBConfig struct {
 	User       string `json:"username"`
 	Pass       string `json:"password"`

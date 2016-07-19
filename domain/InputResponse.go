@@ -1,20 +1,6 @@
 package domain
 
-import (
-	"bytes"
-	"crypto/sha1"
-	"fmt"
-
-	textdistance "github.com/masatana/go-textdistance"
-)
-
-// InputOutputStore ...
-type InputOutputStore interface {
-	Store(InputOutput) error
-	Response(string, string) (InputOutput, error)
-	Upvote(InputOutput) error
-	Downvote(InputOutput) error
-}
+import textdistance "github.com/masatana/go-textdistance"
 
 // InputOutput ...
 type InputOutput struct {
@@ -30,28 +16,7 @@ func (i InputOutput) TableName() string {
 	return "input_response_pairs"
 }
 
-// Match ...
-type Match struct {
-	ID        int    `sql:"AUTO_INCREMENT" gorm:"primary_key"`
-	UID       string `json:"uid" sql:"unique"`
-	Input     string `json:"input"`
-	Match     string `json:"match"`
-	Room      string `json:"room"`
-	UpVotes   int    `json:"upvotes"`
-	DownVotes int    `json:"downvotes"`
-}
-
-// NewMatch ...
-func NewMatch(input, match, room string) Match {
-	return Match{
-		Input: input,
-		Match: match,
-		UID:   Hash(input, match),
-		Room:  room,
-	}
-}
-
-// NewInputOutput ...
+// NewInputOutput returns a new input output object.
 func NewInputOutput(input, output string, room int64) InputOutput {
 	return InputOutput{
 		Input:  input,
@@ -76,13 +41,4 @@ func SoftMatch(input string, pairs []InputOutput) (InputOutput, float64) {
 		}
 	}
 	return response, maxScore
-}
-
-// Hash ...
-func Hash(parts ...string) string {
-	var buffer bytes.Buffer
-	for _, part := range parts {
-		buffer.WriteString(part)
-	}
-	return fmt.Sprintf("%x", sha1.Sum(buffer.Bytes()))
 }
