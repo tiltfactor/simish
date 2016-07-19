@@ -39,5 +39,5 @@ To change the soft match algorithm edit the SoftMatch function in the domain/Inp
 
 # Getting a match
 ```bash
-GET http://localhost:8000/api/v1/response?input=Hello&room=ExampleRoom
+GET http://localhost:8000/api/v1/response?input=Hello&room=1
 ```
