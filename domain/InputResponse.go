@@ -2,7 +2,8 @@ package domain
 
 import textdistance "github.com/masatana/go-textdistance"
 
-// InputOutput ...
+// InputOutput used to map the database structure to the input output pair used by the
+// program.
 type InputOutput struct {
 	int    `sql:"AUTO_INCREMENT" gorm:"primary_key"`
 	Input  string `json:"pc_input" gorm:"column:pc_input"`
