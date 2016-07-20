@@ -34,7 +34,7 @@ func NewSQLStore(path string) (*SQLStore, error) {
 }
 
 // SaveInputOutput saves the provided input output pair
-func (s SQLStore) SaveInputOutput(io domain.InputOutput) {
+func (s SQLStore) SaveInputOutput(io domain.InputOutput) error {
 	indb := domain.InputOutput{}
 	s.db.Model(new(domain.InputOutput)).
 		Where("pc_input = ? AND gm_input = ?", io.Input, io.Output).
@@ -44,6 +44,7 @@ func (s SQLStore) SaveInputOutput(io domain.InputOutput) {
 	if indb.Input == "" {
 		s.db.Save(&io)
 	}
+	return nil
 }
 
 // Response gets the available pairs from the database and runs the SoftMatch algorithm

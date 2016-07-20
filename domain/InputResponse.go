@@ -11,6 +11,12 @@ type InputOutput struct {
 	RoomID int64  `json:"room_id"`
 }
 
+// InputOutputStore is the interface that needs to be fulfilled by other store implementations.
+type InputOutputStore interface {
+	SaveInputOutput(InputOutput) error
+	Response(string, int64) (InputOutput, float64)
+}
+
 // TableName setting this function satisfies the gorm interface and changes the table
 // name.
 func (i InputOutput) TableName() string {

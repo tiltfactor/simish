@@ -1,11 +1,12 @@
 # Simish
 
+Simish is a sentence similarity and matching microservice service built using golang.
+https://golang.org/
 
-Simish is a sentence matching microservice built for the crowded-dungeon game.
 
-godocs https://godoc.org/github.com/tiltfactor/simish
+# Getting Started
 
-To install Simish just run.
+Installing Simish is simple. Assuming you have golang installed simply run.
 ```bash
 go get github.com/tiltfactor/simish
 ```
@@ -15,8 +16,12 @@ To update to new version add the -u flag
 go get -u github.com/tiltfactor/simish
 ```
 
-To run the program make sure you have a db_cfg.json file in the directory where you're running
-Simish.
+Assuming that a MySQL database is being used as storage you can run
+```bash
+simish init
+```
+To generate a configuration file. See Databases section for information on extending support for
+other databases.
 
 ```json
 {
@@ -29,15 +34,47 @@ Simish.
 }
 ```
 
-and then run
+Once this file is generated
+```bash
+simish start
 ```
-simish
-```
+will start the simish service
 
+# Databases
+Simish comes with support for MySQL but can be easily extended to support other
+databases and storage methods.
+
+To extend Simish with support for other storage systems simply implement the InputOutputStore
+interface (found in domain/InputResponse.go).
+```
+type InputOutputStore interface {
+	SaveInputOutput(InputOutput) error
+	Response(string, int64) (InputOutput, float64)
+}
+```
+# Algorithm
 To change the soft match algorithm edit the SoftMatch function in the domain/InputResponse file.
+Currently the service uses the JaroWinklerDistance to calculate the closeness of two sentences
+but this can easily be changed or extended by editing the SoftMatch function in
+domain/InputResponse.go
 
 
 # Getting a match
+## Request
 ```bash
 GET http://localhost:8000/api/v1/response?input=Hello&room=1
 ```
+
+## Response
+```json
+{
+	"input": "Hello",
+	"response": "#splat",
+	"match": "Hello",
+	"room": "1",
+	"score":1
+}
+```
+The response consists of the provided input, the response that was found for that input, the existing
+input that was found for it, the room number used for searching, and the score (closeness) of the two
+inputs. 

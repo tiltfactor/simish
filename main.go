@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -10,14 +11,16 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/tiltfactor/simish/domain"
 	"github.com/tiltfactor/simish/impl"
+	"github.com/urfave/cli"
 )
 
 type inputData map[string]string
 
 // App holds the db structure. Used for dep injection.
 type App struct {
-	db *impl.SQLStore
+	db domain.InputOutputStore
 }
 
 type response struct {
@@ -93,7 +96,7 @@ func (cfg *DBConfig) connectionString() string {
 	return connStr
 }
 
-func main() {
+func startSimish(c *cli.Context) error {
 	cfgFile, err := ioutil.ReadFile("./db_cfg.json")
 	if err != nil {
 		log.Fatal(err)
@@ -128,4 +131,75 @@ func main() {
 	if err := http.ListenAndServe(":"+cfg.ServerPort, r); err != nil {
 		log.Fatal(err)
 	}
+	return nil
+}
+
+func readInput(prompt string) string {
+	scan := bufio.NewScanner(os.Stdin)
+	fmt.Print(prompt + " ")
+	scan.Scan()
+	return scan.Text()
+}
+
+func createCfg(c *cli.Context) error {
+
+	fmt.Println("Follow along to create a db_cfg.")
+	fmt.Println("Warning: This will overwrite existing db_cfg.json file")
+
+	f, err := os.Create("./db_cfg.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	serverPort := readInput("Port to run Simish on:")
+	user := readInput("MySQL database username:")
+	pass := readInput("MySQL database password:")
+	ip := readInput("MySQL database IP address:")
+	port := readInput("MySQL database port:")
+	db := readInput("MySQL database name:")
+
+	cfg := DBConfig{
+		ServerPort: serverPort,
+		User:       user,
+		Pass:       pass,
+		IP:         ip,
+		DB:         db,
+		Port:       port,
+	}
+
+	cm, err := json.MarshalIndent(&cfg, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println()
+	fmt.Println(string(cm))
+	w := bufio.NewWriter(f)
+	if _, err := w.Write(cm); err != nil {
+		log.Fatal(err)
+	}
+	w.Flush()
+	fmt.Println("Successfully created db_cfg.json")
+
+	return nil
+}
+
+func main() {
+	app := cli.NewApp()
+	app.Name = "Simish"
+	app.Usage = "Soft Matching Algorithm as a service"
+	app.Version = "0.4.0"
+	app.Commands = []cli.Command{
+		{
+			Name:   "init",
+			Usage:  "Create db_cfg.json file",
+			Action: createCfg,
+		},
+		{
+			Name:   "start",
+			Usage:  "Start the simish server",
+			Action: startSimish,
+		},
+	}
+	app.Run(os.Args)
 }
