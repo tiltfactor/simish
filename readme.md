@@ -52,6 +52,8 @@ type InputOutputStore interface {
 	Response(string, int64) (InputOutput, float64)
 }
 ```
+*If you are extending the features supported by the storage (eg adding upvotes and downvotes storage) please be sure to also extend the InputOutputStore interface. This will make sure that the contract stays the same between storage backends and that the main program does not have to worry about the implementation details of the storage mechanism* 
+
 # Algorithm
 To change the soft match algorithm edit the SoftMatch function in the domain/InputResponse file.
 Currently the service uses the JaroWinklerDistance to calculate the closeness of two sentences
@@ -77,4 +79,4 @@ GET http://localhost:8000/api/v1/response?input=Hello&room=1
 ```
 The response consists of the provided input, the response that was found for that input, the existing
 input that was found for it, the room number used for searching, and the score (closeness) of the two
-inputs. 
+inputs.
