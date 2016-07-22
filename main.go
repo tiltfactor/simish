@@ -24,11 +24,13 @@ type App struct {
 }
 
 type response struct {
-	Input    string  `json:"input"`
-	Response string  `json:"response"`
-	Match    string  `json:"match,omitempty"`
-	Room     string  `json:"room"`
-	Score    float64 `json:"score"`
+	Input      string  `json:"input"`
+	Response   string  `json:"response"`
+	Match      string  `json:"match,omitempty"`
+	Room       string  `json:"room"`
+	Score      float64 `json:"score"`
+	AiCol      int64   `json:"aiCol"`
+	ResultType int64   `json:"resultType"`
 }
 
 func (r response) String() string {
@@ -61,11 +63,13 @@ func (a App) ResponseHandler(w http.ResponseWriter, r *http.Request) {
 	io, score := a.db.Response(input[0], roomNumber)
 
 	resp := response{
-		Input:    input[0],
-		Response: io.Output,
-		Match:    io.Input,
-		Room:     room[0],
-		Score:    score,
+		Input:      input[0],
+		Response:   io.Output,
+		Match:      io.Input,
+		Room:       room[0],
+		Score:      score,
+		AiCol:      io.AiCol,
+		ResultType: io.ResultType,
 	}
 
 	log.Println(resp)

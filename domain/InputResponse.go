@@ -5,10 +5,12 @@ import textdistance "github.com/masatana/go-textdistance"
 // InputOutput used to map the database structure to the input output pair used by the
 // program.
 type InputOutput struct {
-	int    `sql:"AUTO_INCREMENT" gorm:"primary_key"`
-	Input  string `json:"pc_input" gorm:"column:pc_input"`
-	Output string `json:"gm_response" gorm:"column:gm_response"`
-	RoomID int64  `json:"room_id"`
+	int        `sql:"AUTO_INCREMENT" gorm:"primary_key"`
+	AiCol      int64  `gorm:"column:ai_col"`
+	ResultType int64  `gorm:"column:result_type"`
+	Input      string `json:"pc_input" gorm:"column:pc_input"`
+	Output     string `json:"gm_response" gorm:"column:gm_response"`
+	RoomID     int64  `json:"room_id"`
 }
 
 // InputOutputStore is the interface that needs to be fulfilled by other store implementations.
@@ -37,7 +39,6 @@ func NewInputOutput(input, output string, room int64) InputOutput {
 // it should match against.
 func SoftMatch(input string, pairs []InputOutput) (InputOutput, float64) {
 	response := InputOutput{}
-
 	var maxScore float64
 	for _, pair := range pairs {
 		indb := pair.Input
