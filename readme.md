@@ -38,7 +38,10 @@ Once this file is generated
 ```bash
 simish start
 ```
-will start the simish service
+will start the simish service. To run it as a background process:
+```bash
+nohup simish start &
+```
 
 # Databases
 Simish comes with support for MySQL but can be easily extended to support other
