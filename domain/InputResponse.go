@@ -1,7 +1,5 @@
 package domain
 
-import textdistance "github.com/masatana/go-textdistance"
-
 // InputOutput used to map the database structure to the input output pair used by the
 // program.
 type InputOutput struct {
@@ -11,6 +9,8 @@ type InputOutput struct {
 	Input      string `json:"pc_input" gorm:"column:pc_input"`
 	Output     string `json:"gm_response" gorm:"column:gm_response"`
 	RoomID     int64  `json:"room_id"`
+	Upvotes	   int64  `gorm:"pc_upvotes"`
+	Downvotes  int64  `gorm:"pc_downvotes"`
 }
 
 // InputOutputStore is the interface that needs to be fulfilled by other store implementations.
@@ -40,9 +40,11 @@ func NewInputOutput(input, output string, room int64) InputOutput {
 func SoftMatch(input string, pairs []InputOutput) (InputOutput, float64) {
 	response := InputOutput{}
 	var maxScore float64
+	userTokens := prepareInput(input)
+
 	for _, pair := range pairs {
-		indb := pair.Input
-		score := textdistance.JaroWinklerDistance(input, indb)
+		dbTokens := prepareInput(pair.Input)
+		score := rawScore(userTokens, dbTokens)
 		if score > maxScore {
 			maxScore = score
 			response = pair
