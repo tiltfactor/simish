@@ -54,3 +54,10 @@ func (s SQLStore) Response(in string, room int64) (domain.InputOutput, float64) 
 	s.db.Model(&domain.InputOutput{}).Where("room_id = ?", room).Find(&pairs)
 	return domain.SoftMatch(in, pairs)
 }
+
+// GetAllPairs is used for testing to retrieve the pairs for a given room
+func (s SQLStore) GetAllPairs(room int64) []domain.InputOutput {
+	pairs := []domain.InputOutput{}
+	s.db.Model(&domain.InputOutput{}).Where("room_id = ?", room).Find(&pairs)
+	return pairs
+}
