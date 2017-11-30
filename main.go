@@ -206,13 +206,8 @@ func runTest(c *cli.Context) {
 	}
 
 	pairs := store.GetAllPairs(1)
-
-	var input string
-	if len(os.Args) > 2 {
-		input = os.Args[2]
-	}
-
-	test.TestMatch(input, pairs)
+	input := c.Args().Get(0)
+	test.RunSoftMatch(input, pairs)
 }
 
 func main() {

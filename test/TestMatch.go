@@ -2,16 +2,17 @@ package test
 
 import (
 	"fmt"
-	"os"
 	"sort"
 
 	"github.com/tiltfactor/simish/domain"
 )
 
-func TestMatch(input string, allPairs []domain.InputOutput) {
+// RunSoftMatch tests the softmatch algorithm with the input string against the
+// pairs given. If no input is given, each of the pairs will be used as an input.
+func RunSoftMatch(input string, allPairs []domain.InputOutput) {
 	if input != "" {
-		bestMatch, score := domain.SoftMatch(os.Args[2], allPairs)
-		fmt.Printf("Input:\t\t%v\n", os.Args[2])
+		bestMatch, score := domain.SoftMatch(input, allPairs)
+		fmt.Printf("Input:\t\t%v\n", input)
 		fmt.Printf("Matched:\t%v\n", bestMatch.Input)
 		fmt.Printf("Response:\t%v\n", bestMatch.Output)
 		fmt.Printf("Score:\t\t%v\n\n", score)
