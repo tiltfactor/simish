@@ -7,11 +7,10 @@ import (
 	textdistance "github.com/masatana/go-textdistance"
 )
 
-const wordWeight float64 = 0.7
+// Relative weighting of words, actions, and word order (distance)
+const wordWeight float64 = 1
 const actionWeight float64 = 1
 const distWeight float64 = 0.2
-const upWeight float64 = 0
-const downWeight float64 = 0
 
 var reg = regexp.MustCompile("([.,?!*]|[[:blank:]])+")
 
@@ -39,25 +38,14 @@ func prepareInput(input string) []string {
 	return filteredTokens
 }
 
-func rawScore(userTokens, dbTokens []string) float64 {
+func getRawScore(userTokens, dbTokens []string) float64 {
 	matchedWords, matchedActions, totalActions := 0, 0, 0
 
 	// The array counter and arrays will be used to track matches
 	// to evaluate how similar the Token order is.
 	userArray := make([]rune, len(userTokens))
 	dbArray := make([]rune, len(dbTokens))
-	var arrayCounter rune = 0x20
-
-	for index := range userTokens {
-		userArray[index] = arrayCounter
-		arrayCounter++
-	}
-	for index := range dbTokens {
-		dbArray[index] = arrayCounter
-		arrayCounter++
-	}
-
-	totalTokens := len(dbTokens) + len(userTokens)
+	var arrayCounter rune = 0x41
 
 	// Count actions from the database input
 	for _, dbToken := range dbTokens {
@@ -74,7 +62,7 @@ func rawScore(userTokens, dbTokens []string) float64 {
 		}
 
 		for dbIndex, dbToken := range dbTokens {
-			if userToken == dbToken {
+			if userToken == dbToken && userArray[userIndex] == 0 && dbArray[dbIndex] == 0 {
 				userArray[userIndex] = arrayCounter
 				dbArray[dbIndex] = arrayCounter
 				arrayCounter++
@@ -86,21 +74,22 @@ func rawScore(userTokens, dbTokens []string) float64 {
 					matchedWords++
 				}
 
-				// Remove the matched token from the inner array to prevent additional matches
-				dbTokens = append(dbTokens[:dbIndex], dbTokens[dbIndex+1:]...)
 				break
 			}
 		}
 	}
 
-	totalWords := totalTokens - totalActions
-
-	// The matched ratio must be multiplied by two because each matched word
-	// appears twice (once in each input).
-	wordMatch := 2 * float64(matchedWords) / float64(totalWords);
-	var actionMatch float64
-	if totalActions > 0 {
-		actionMatch = 2 * float64(matchedActions) / float64(totalActions)
+	for index, value := range userArray {
+		if value == 0 {
+			userArray[index] = arrayCounter
+			arrayCounter++
+		}
+	}
+	for index, value := range dbArray {
+		if value == 0 {
+			dbArray[index] = arrayCounter
+			arrayCounter++
+		}
 	}
 
 	// Find the difference in word order between the two strings
@@ -108,8 +97,22 @@ func rawScore(userTokens, dbTokens []string) float64 {
 	dbString := string(dbArray)
 	dist := textdistance.JaroWinklerDistance(userString, dbString)
 
-	score := (wordMatch * wordWeight + actionMatch * actionWeight + dist * distWeight) /
-		(wordWeight + actionWeight + distWeight)
+	totalTokens := len(dbTokens) + len(userTokens)
+	totalWords := totalTokens - totalActions
+
+	// The matched ratio must be multiplied by two because each matched word
+	// appears twice (once in each input).
+	wordMatch := 2 * float64(matchedWords) / float64(totalWords);
+
+	var score float64
+	if totalActions > 0 {
+		actionMatch := 2 * float64(matchedActions) / float64(totalActions)
+		score = (wordMatch * wordWeight + actionMatch * actionWeight + dist * distWeight) /
+			(wordWeight + actionWeight + distWeight)
+
+	} else {
+		score = (wordMatch * wordWeight + dist * distWeight) / (wordWeight + distWeight);
+	}
 
 	return score
 }
