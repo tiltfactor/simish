@@ -206,8 +206,11 @@ func runTest(c *cli.Context) {
 	}
 
 	pairs := store.GetAllPairs(1)
-	input := c.Args().Get(0)
-	test.RunSoftMatch(input, pairs)
+	args := c.Args()
+	if len(args) > 2 {
+		log.Fatal("Too many arguments")
+	}
+	test.RunSoftMatch(args, pairs)
 }
 
 func main() {

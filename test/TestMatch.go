@@ -9,8 +9,17 @@ import (
 
 // RunSoftMatch tests the softmatch algorithm with the input string against the
 // pairs given. If no input is given, each of the pairs will be used as an input.
-func RunSoftMatch(input string, allPairs []domain.InputOutput) {
-	if input != "" {
+func RunSoftMatch(args []string, allPairs []domain.InputOutput) {
+	if len(args) == 2 {
+		input := args[0]
+		pairs := []domain.InputOutput {domain.NewInputOutput(args[1], "", 1)}
+		bestMatch, score := domain.SoftMatch(args[0], pairs)
+		fmt.Printf("Input:\t\t%v\n", input)
+		fmt.Printf("Matched:\t%v\n", bestMatch.Input)
+		fmt.Printf("Score:\t\t%v\n\n", score)
+
+	} else if len(args) == 1 {
+		input := args[0]
 		bestMatch, score := domain.SoftMatch(input, allPairs)
 		fmt.Printf("Input:\t\t%v\n", input)
 		fmt.Printf("Matched:\t%v\n", bestMatch.Input)
