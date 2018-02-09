@@ -1,5 +1,17 @@
 package domain
 
+import (
+	"math"
+)
+
+// voteAsymptoteSlope is the slope of the total-vote function. It determines how
+// quickly our confidence increases as we get more votes for a pair.
+const voteAsymptoteSlope float64 = 0.2
+
+// initialVoteScore is the score given to a pair with no votes. As the pair is
+// up-voted or down-voted, it increases or decreases from that point.
+const initialVoteScore float64 = 0.7
+
 // InputOutput used to map the database structure to the input output pair used by the
 // program.
 type InputOutput struct {
@@ -44,11 +56,31 @@ func SoftMatch(input string, pairs []InputOutput) (InputOutput, float64) {
 
 	for _, pair := range pairs {
 		dbTokens := prepareInput(pair.Input)
-		score := rawScore(userTokens, dbTokens)
+		rawScore := getRawScore(userTokens, dbTokens)
+		voteScore := getVoteScore(pair.Upvotes, pair.Downvotes)
+		score := rawScore * voteScore
 		if score > maxScore {
 			maxScore = score
 			response = pair
 		}
 	}
 	return response, maxScore
+}
+
+func getVoteScore(upvotes int64, downvotes int64) float64 {
+	totalVotes := upvotes + downvotes
+	upvoteRatio := float64(upvotes) / float64(totalVotes)
+	if math.IsNaN(upvoteRatio) {
+		upvoteRatio = 0
+	}
+
+	// totalVoteAsymptote is a value from 0 to 1. When there are no votes, totalAsymptote = 0.
+	// As the number of votes increases, totalAsymptote increases towards 1
+	totalVoteAsymptote := 1 - 1 / (voteAsymptoteSlope * float64(totalVotes) + 1)
+
+	// voteScore is a value from 0 to 1. When there are no votes, voteScore = 0.5.
+	// As we get more votes, the voteScore becomes more extreme, increasing towards
+	// 0 if there are more down-votes, or 1 if there are more up-votes
+	voteScore := initialVoteScore + totalVoteAsymptote * (upvoteRatio - initialVoteScore);
+	return voteScore
 }
