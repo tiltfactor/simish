@@ -21,8 +21,8 @@ type InputOutput struct {
 	Input      string `json:"pc_input" gorm:"column:pc_input"`
 	Output     string `json:"gm_response" gorm:"column:gm_response"`
 	RoomID     int64  `json:"room_id"`
-	Upvotes	   int64  `gorm:"pc_upvotes"`
-	Downvotes  int64  `gorm:"pc_downvotes"`
+	Upvotes	   float64  `gorm:"column:pc_upvotes_weighted"`
+	Downvotes  float64  `gorm:"column:pc_downvotes_weighted"`
 }
 
 // InputOutputStore is the interface that needs to be fulfilled by other store implementations.
@@ -67,16 +67,16 @@ func SoftMatch(input string, pairs []InputOutput) (InputOutput, float64) {
 	return response, maxScore
 }
 
-func getVoteScore(upvotes int64, downvotes int64) float64 {
+func getVoteScore(upvotes float64, downvotes float64) float64 {
 	totalVotes := upvotes + downvotes
-	upvoteRatio := float64(upvotes) / float64(totalVotes)
+	upvoteRatio := upvotes / totalVotes
 	if math.IsNaN(upvoteRatio) {
 		upvoteRatio = 0
 	}
 
 	// totalVoteAsymptote is a value from 0 to 1. When there are no votes, totalAsymptote = 0.
 	// As the number of votes increases, totalAsymptote increases towards 1
-	totalVoteAsymptote := 1 - 1 / (voteAsymptoteSlope * float64(totalVotes) + 1)
+	totalVoteAsymptote := 1 - 1 / (voteAsymptoteSlope * totalVotes + 1)
 
 	// voteScore is a value from 0 to 1. When there are no votes, voteScore = 0.5.
 	// As we get more votes, the voteScore becomes more extreme, increasing towards
