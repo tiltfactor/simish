@@ -12,7 +12,7 @@ import (
 func RunSoftMatch(args []string, allPairs []domain.InputOutput) {
 	if len(args) == 2 {
 		input := args[0]
-		pairs := []domain.InputOutput {domain.NewInputOutput(args[1], "", 1)}
+		pairs := []domain.InputOutput {domain.NewInputOutput(args[1], "", 1, 1)}
 		bestMatch, score := domain.SoftMatch(args[0], pairs)
 		fmt.Printf("Input:\t\t%v\n", input)
 		fmt.Printf("Matched:\t%v\n", bestMatch.Input)

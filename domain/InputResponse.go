@@ -25,11 +25,12 @@ func (i InputOutput) TableName() string {
 }
 
 // NewInputOutput returns a new input output object.
-func NewInputOutput(input, output string, room int64) InputOutput {
+func NewInputOutput(input, output string, room int64, voteScore float64) InputOutput {
 	return InputOutput{
 		Input:  input,
 		Output: output,
 		RoomID: room,
+		VoteScore: voteScore,
 	}
 }
 
