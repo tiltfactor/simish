@@ -13,6 +13,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/tiltfactor/simish/domain"
 	"github.com/tiltfactor/simish/impl"
+	"github.com/tiltfactor/simish/test"
 	"github.com/urfave/cli"
 )
 
@@ -188,6 +189,30 @@ func createCfg(c *cli.Context) error {
 	return nil
 }
 
+func runTest(c *cli.Context) {
+	cfgFile, err := ioutil.ReadFile("./db_cfg.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cfg := &DBConfig{}
+	if err := json.Unmarshal(cfgFile, cfg); err != nil {
+		log.Fatal(err)
+	}
+
+	store, err := impl.NewSQLStore(cfg.connectionString())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	pairs := store.GetAllPairs(1)
+	args := c.Args()
+	if len(args) > 2 {
+		log.Fatal("Too many arguments")
+	}
+	test.RunSoftMatch(args, pairs)
+}
+
 func main() {
 	app := cli.NewApp()
 	app.Name = "Simish"
@@ -203,6 +228,11 @@ func main() {
 			Name:   "start",
 			Usage:  "Start the simish server",
 			Action: startSimish,
+		},
+		{
+			Name:   "test",
+			Usage:  "Test the softmatch algorithm",
+			Action: runTest,
 		},
 	}
 	app.Run(os.Args)
