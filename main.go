@@ -217,7 +217,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "Simish"
 	app.Usage = "Soft Matching Algorithm as a service"
-	app.Version = "0.4.0"
+	app.Version = "0.5.0"
 	app.Commands = []cli.Command{
 		{
 			Name:   "init",
